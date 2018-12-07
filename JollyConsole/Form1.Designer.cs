@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace JollyConsole
 {
@@ -53,9 +54,10 @@ namespace JollyConsole
             // 
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 78);
+            this.label1.Size = new System.Drawing.Size(126, 78);
             this.label1.TabIndex = 0;
             this.label1.Text = "MACROS";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             for (int i = 0; i < NUMBER_OF_MACROS; i++)
             {
@@ -66,7 +68,7 @@ namespace JollyConsole
                 button0.Location = new System.Drawing.Point(3, 81);
                 button0.Name = "button" + i;
                 button0.Size = new System.Drawing.Size(125, 23);
-                button0.TabIndex = i*2;
+                button0.TabIndex = i * 2;
                 button0.Text = "Macro" + i;
                 button0.UseVisualStyleBackColor = true;
                 button0.Click += new System.EventHandler(buttonMacro1_Click);
