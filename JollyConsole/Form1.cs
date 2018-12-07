@@ -241,7 +241,7 @@ namespace JollyConsole
             }
             cmdOutput.Clear();
             cmdStreamWriter.WriteLine(result);
-            Thread.Sleep(100);
+            Thread.Sleep(2000);
             textBox3.Text = RemoveLastLine();
             textBox3.AppendText(cmdOutput.ToString());
             textBox3.AppendText(Environment.NewLine);
