@@ -85,6 +85,7 @@ namespace JollyConsole
                     textBox.TabIndex = command.Position;
                     textBox.Text = command.Text;
                     textBox.KeyPress += new KeyPressEventHandler(enter_key_event);
+                    textBox.LostFocus += new EventHandler(CommandTextBoxFocusLost);
                     panel.Controls.Add(textBox);
 
                     textBoxLocation += textBox.Height + 10;
@@ -104,12 +105,50 @@ namespace JollyConsole
             }
         }
 
+        void CommandTextBoxFocusLost(object sender, EventArgs e)
+        {
+            TextBox textBox = ((TextBox)sender);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+            foreach (Macro macro in macros)
+            {
+                if (macro.Id.ToString() == textBoxNameParts[0])
+                {
+                    foreach (Command command in macro.Commands)
+                    {
+                        if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
+                        {
+                            command.Text = textBox.Text;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
         void enter_key_event(object sender, KeyPressEventArgs e)
         {
             TextBox textBox = ((TextBox)sender);
             string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
             if (e.KeyChar == Convert.ToChar(Keys.Return))
             {
+                foreach (Macro macro in macros)
+                {
+                    if (macro.Id.ToString() == textBoxNameParts[0])
+                    {
+                        foreach (Command command in macro.Commands)
+                        {
+                            if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
+                            {
+                                command.Text = textBox.Text;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+
                 foreach (Panel panel in panels)
                 {
                     if (panel.Name.Replace("panel", "") == textBoxNameParts[0])
@@ -124,27 +163,6 @@ namespace JollyConsole
                         }
                         break;
                     }
-                }
-                return;
-            }
-            if (!char.IsLetterOrDigit(e.KeyChar))
-            {
-                return;
-            }
-
-            foreach (Macro macro in macros)
-            {
-                if (macro.Id.ToString() == textBoxNameParts[0])
-                {
-                    foreach (Command command in macro.Commands)
-                    {
-                        if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
-                        {
-                            command.Text = textBox.Text + e.KeyChar;
-                            break;
-                        }
-                    }
-                    break;
                 }
             }
         }
