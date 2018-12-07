@@ -11,6 +11,12 @@ namespace JollyConsole
     public partial class Form1 : Form
     {
         private static StringBuilder cmdOutput = null;
+
+        const string Separator = "---Command Completed---";
+        // Has to be something that won't occur in normal output.  
+
+        volatile bool finished = false;
+
         private static int NUMBER_OF_MACROS = 4;
         private static int NUMBER_OF_COMMANDS_PER_MACRO = 4;
 
@@ -239,18 +245,34 @@ namespace JollyConsole
                     break;
                 }
             }
+
+            finished = false;
             cmdOutput.Clear();
             cmdStreamWriter.WriteLine(result);
-            Thread.Sleep(2000);
-            textBox3.Text = RemoveLastLine();
-            textBox3.AppendText(cmdOutput.ToString());
-            textBox3.AppendText(Environment.NewLine);
-            textBox3.AppendText(GetCurrentLocation());
+            cmdStreamWriter.WriteLine("@echo " + Separator);
+
+            while (!finished)
+            {
+                Thread.Sleep(100);
+                if (cmdOutput.ToString().IndexOf(Separator, StringComparison.Ordinal) >= 0)
+                {
+                    finished = true;
+                }
+            }
+            var outputString = RemoveLastLine(textBox3.Text);
+            outputString += cmdOutput.ToString();
+            outputString = RemoveLastLine(outputString);
+            outputString = RemoveLastLine(outputString);
+            outputString += Environment.NewLine;
+            outputString += GetCurrentLocation();
+
+            textBox3.Text = "";
+            textBox3.AppendText(outputString);
         }
 
-        private string RemoveLastLine()
+        private string RemoveLastLine(string str)
         {
-            return textBox3.Text.Remove(textBox3.Text.LastIndexOf(Environment.NewLine));
+            return str.Remove(str.LastIndexOf(Environment.NewLine));
         }
 
         private void buttonMacro1_Click(object sender, EventArgs e)
