@@ -24,6 +24,7 @@ namespace JollyConsole
         {
             InitializeComponent();
             InitializeConsole();
+            panel1.AutoScroll = true;
         }
 
         void InitializeConsole()
