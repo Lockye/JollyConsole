@@ -122,6 +122,32 @@ namespace JollyConsole
             cmdStreamWriter = cmdProcess.StandardInput;
             cmdProcess.BeginOutputReadLine();
             cmdProcess.BeginErrorReadLine();
+            Thread.Sleep(100);
+            textBox3.Text = cmdOutput.ToString();
+            Thread.Sleep(100);
+            SetAndPrintDefaultLocation();
+        }
+
+        private void SetAndPrintDefaultLocation()
+        {
+            cmdOutput.Clear();
+            cmdStreamWriter.WriteLine("c:&&cd %userprofile%");
+            Thread.Sleep(100);
+            textBox3.AppendText(Environment.NewLine);
+            textBox3.AppendText(Environment.NewLine);
+            textBox3.AppendText(GetCurrentLocation());
+        }
+
+        private string GetCurrentLocation()
+        {
+            cmdOutput.Clear();
+            cmdStreamWriter.WriteLine("cd");
+            Thread.Sleep(100);
+            string[] lines = cmdOutput.ToString().Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None);
+
+            return $"{lines[2]}>";
         }
 
         private static void SortOutputHandler(object sendingProcess,
@@ -184,9 +210,18 @@ namespace JollyConsole
                 }
                 break;
             }
+            cmdOutput.Clear();
             cmdStreamWriter.WriteLine(result);
-            Thread.Sleep(500);
-            textBox3.Text = cmdOutput.ToString();
+            Thread.Sleep(100);
+            textBox3.Text = RemoveLastLine();
+            textBox3.AppendText(cmdOutput.ToString());
+            textBox3.AppendText(Environment.NewLine);
+            textBox3.AppendText(GetCurrentLocation());
+        }
+
+        private string RemoveLastLine()
+        {
+            return textBox3.Text.Remove(textBox3.Text.LastIndexOf(Environment.NewLine));
         }
     }
 }
