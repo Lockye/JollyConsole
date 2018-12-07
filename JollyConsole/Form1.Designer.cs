@@ -39,6 +39,7 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.AutoScroll = true;
             this.mainPanel.Controls.Add(this.label1);
             this.mainPanel.Location = new System.Drawing.Point(12, 12);
             this.mainPanel.Name = "mainPanel";
@@ -70,6 +71,7 @@
             this.textBox3.Location = new System.Drawing.Point(3, 3);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
+            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox3.Size = new System.Drawing.Size(628, 336);
             this.textBox3.TabIndex = 0;
             // 

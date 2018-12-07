@@ -28,7 +28,6 @@ namespace JollyConsole
             InitializeComponent();
             InitializeConsole();
             InitializeGUIPanel();
-            mainPanel.AutoScroll = true;
         }
 
         private void InitializeGUIPanel()
@@ -81,11 +80,13 @@ namespace JollyConsole
                 {
                     TextBox textBox = new TextBox();
                     textBox.Location = new System.Drawing.Point(0, textBoxLocation);
-                    textBox.Name = "textBox" + macro.Commands.IndexOf(command);
+                    textBox.Name = "textBox" + macro.Id + "Index" + macro.Commands.IndexOf(command);
                     textBox.Size = new System.Drawing.Size(100, 20);
                     textBox.TabIndex = command.Position;
                     textBox.Text = command.Text;
+                    textBox.KeyDown += new KeyEventHandler(enter_key_event);
                     panel.Controls.Add(textBox);
+
                     textBoxLocation += textBox.Height + 10;
                 }
 
@@ -100,6 +101,32 @@ namespace JollyConsole
                 panel.Controls.Add(executeButton);
 
                 mainPanel.Controls.Add(panel);
+            }
+        }
+
+        void enter_key_event(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                // execute_click
+            }
+            //enter key is down
+            TextBox textBox = ((TextBox)sender);
+            foreach (Macro macro in macros)
+            {
+                string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+                if (macro.Id.ToString() == textBoxNameParts[0])
+                {
+                    foreach (Command command in macro.Commands)
+                    {
+                        if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
+                        {
+                            command.Text = textBox.Text + e.KeyData.ToString().ToLower();
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
         }
 
@@ -178,7 +205,8 @@ namespace JollyConsole
             Button button = ((Button)sender);
             foreach (Panel panel in panels)
             {
-                if (panel.Name.Replace("panel", "") == button.Name.Replace("button", "")) {
+                if (panel.Name.Replace("panel", "") == button.Name.Replace("button", ""))
+                {
                     if (panel.Visible)
                     {
                         panel.Hide();
@@ -190,7 +218,7 @@ namespace JollyConsole
                     break;
                 }
             }
-            
+
         }
 
         private void execute_click(object sender, EventArgs e)
