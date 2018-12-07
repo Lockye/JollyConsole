@@ -1,4 +1,6 @@
-﻿namespace JollyConsole
+﻿using System.Windows.Forms;
+
+namespace JollyConsole
 {
     partial class Form1
     {
@@ -28,7 +30,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.mainPanel = new System.Windows.Forms.Panel();
+            this.mainPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBox3 = new System.Windows.Forms.TextBox();
@@ -41,6 +43,7 @@
             // 
             this.mainPanel.AutoScroll = true;
             this.mainPanel.Controls.Add(this.label1);
+            this.mainPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.mainPanel.Location = new System.Drawing.Point(12, 12);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(136, 426);
@@ -53,6 +56,70 @@
             this.label1.Size = new System.Drawing.Size(100, 78);
             this.label1.TabIndex = 0;
             this.label1.Text = "MACROS";
+
+            for (int i = 0; i < NUMBER_OF_MACROS; i++)
+            {
+                // 
+                // button0
+                // 
+                var button0 = new Button();
+                button0.Location = new System.Drawing.Point(3, 81);
+                button0.Name = "button" + i;
+                button0.Size = new System.Drawing.Size(125, 23);
+                button0.TabIndex = i*2;
+                button0.Text = "Macro" + i;
+                button0.UseVisualStyleBackColor = true;
+                button0.Click += new System.EventHandler(buttonMacro1_Click);
+                this.mainPanel.Controls.Add(button0);
+                // 
+                // panel0
+                // 
+                var panel0 = new FlowLayoutPanel();
+                panel0.SuspendLayout();
+                panel0.Location = new System.Drawing.Point(3, 110);
+                panel0.Name = "panel" + i;
+                panel0.Size = new System.Drawing.Size(133, 135);
+                panel0.TabIndex = i * 2 + 1;
+                if (i > 0)
+                {
+                    panel0.Hide();
+                }
+                panels.Add(panel0);
+
+                for (int j = 0; j < NUMBER_OF_COMMANDS_PER_MACRO; j++)
+                {
+                    // 
+                    // textBox1
+                    // 
+                    var textBox1 = new TextBox();
+                    textBox1.Location = new System.Drawing.Point(3, 3);
+                    textBox1.Name = "textBox" + i + "Index" + j;
+                    textBox1.Size = new System.Drawing.Size(122, 20);
+                    textBox1.TabIndex = j;
+                    textBox1.KeyPress += Enter_key_event;
+                    textBox1.LostFocus += CommandTextBoxFocusLost;
+
+                    panel0.Controls.Add(textBox1);
+                }
+
+                // 
+                // execute0
+                // 
+                var execute0 = new Button();
+                execute0.Location = new System.Drawing.Point(3, 107);
+                execute0.Name = "execute" + i;
+                execute0.Size = new System.Drawing.Size(122, 23);
+                execute0.TabIndex = NUMBER_OF_COMMANDS_PER_MACRO;
+                execute0.Text = "Execute" + i;
+                execute0.UseVisualStyleBackColor = true;
+                execute0.Click += Execute_click;
+
+                panel0.Controls.Add(execute0);
+                panel0.ResumeLayout(false);
+                panel0.PerformLayout();
+
+                this.mainPanel.Controls.Add(panel0);
+            }
             // 
             // panel2
             // 
@@ -100,7 +167,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel mainPanel;
+        private System.Windows.Forms.FlowLayoutPanel mainPanel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;

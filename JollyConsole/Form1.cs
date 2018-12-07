@@ -11,6 +11,9 @@ namespace JollyConsole
     public partial class Form1 : Form
     {
         private static StringBuilder cmdOutput = null;
+        private static int NUMBER_OF_MACROS = 4;
+        private static int NUMBER_OF_COMMANDS_PER_MACRO = 4;
+
         Process cmdProcess;
         StreamWriter cmdStreamWriter;
 
@@ -28,86 +31,37 @@ namespace JollyConsole
 
         private void InitializeGUIPanel()
         {
-            Macro initialMacro = new Macro
+            InitMacros();
+        }
+
+        private void InitMacros()
+        {
+            for(int i = 0; i < NUMBER_OF_MACROS; i++)
             {
-                Id = macroId++,
-                Name = "GIT",
-                Position = 0,
-                Commands = new List<Command>
+                Macro initialMacro = new Macro
                 {
-                    new Command
-                    {
-                        Text = "cd ..",
-                        Enabled = true,
-                        Position = 0
-                    },
-                    new Command
-                    {
-                        Text = "cd ..",
-                        Enabled = true,
-                        Position = 1
-                    }
-                },
-            };
-            macros.Add(initialMacro);
-
-            foreach (Macro macro in macros)
-            {
-                Button macroName = new Button
-                {
-                    Location = new System.Drawing.Point(3, 80),
-                    Name = "button" + macro.Id,
-                    Size = new System.Drawing.Size(100, 25),
-                    TabIndex = 1,
-                    Text = macro.Name,
-                    UseVisualStyleBackColor = true
+                    Id = i,
+                    Name = "GIT",
+                    Position = i*2
                 };
-                macroName.Click += new EventHandler(this.ShowHide);
-                mainPanel.Controls.Add(macroName);
 
-                Panel panel = new Panel
+                var listCommands = new List<Command>();
+                for (int j = 0; j < NUMBER_OF_COMMANDS_PER_MACRO; j++)
                 {
-                    Location = new System.Drawing.Point(3, (80 + macroName.Height + 10)),
-                    Name = "panel" + macro.Id,
-                    Size = new System.Drawing.Size(100, 426),
-                    TabIndex = 0
-                };
-                panels.Add(panel);
-
-                int textBoxLocation = 5;
-                foreach (Command command in macro.Commands)
-                {
-                    TextBox textBox = new TextBox
+                    Command tempCommand = new Command
                     {
-                        Location = new System.Drawing.Point(0, textBoxLocation),
-                        Name = "textBox" + macro.Id + "Index" + macro.Commands.IndexOf(command),
-                        Size = new System.Drawing.Size(100, 20),
-                        TabIndex = command.Position,
-                        Text = command.Text
+                        Text = "",
+                        Enabled = true,
+                        Position = j
                     };
-                    textBox.KeyPress += new KeyPressEventHandler(Enter_key_event);
-                    textBox.LostFocus += new EventHandler(CommandTextBoxFocusLost);
-                    panel.Controls.Add(textBox);
-
-                    textBoxLocation += textBox.Height + 10;
+                    listCommands.Add(tempCommand);
                 }
 
-                Button executeButton = new Button
-                {
-                    Location = new System.Drawing.Point(0, 30 * macro.Commands.Count + 10),
-                    Name = "execute" + macro.Id,
-                    Size = new System.Drawing.Size(100, 23),
-                    TabIndex = 1,
-                    Text = "EXECUTE",
-                    UseVisualStyleBackColor = true
-                };
-                executeButton.Click += new EventHandler(this.Execute_click);
-                panel.Controls.Add(executeButton);
-
-                mainPanel.Controls.Add(panel);
+                initialMacro.Commands = listCommands;
+                macros.Add(initialMacro);
             }
         }
-        
+
         private void CommandTextBoxFocusLost(object sender, EventArgs e)
         {
             TextBox textBox = ((TextBox)sender);
@@ -179,8 +133,8 @@ namespace JollyConsole
             cmdProcess.StartInfo.CreateNoWindow = true;
             cmdProcess.StartInfo.RedirectStandardOutput = true;
 
-            cmdProcess.OutputDataReceived += new DataReceivedEventHandler(SortOutputHandler);
-            cmdProcess.ErrorDataReceived += new DataReceivedEventHandler(ErrorDataHandler);
+            cmdProcess.OutputDataReceived += SortOutputHandler;
+            cmdProcess.ErrorDataReceived += ErrorDataHandler;
             cmdProcess.StartInfo.RedirectStandardInput = true;
             cmdProcess.StartInfo.RedirectStandardError = true;
             cmdProcess.Start();
@@ -234,7 +188,7 @@ namespace JollyConsole
             }
         }
 
-        private void ShowHide(object sender, EventArgs e)
+        private void ChangePanelVisibility(object sender, EventArgs e)
         {
             Button button = ((Button)sender);
             foreach (Panel panel in panels)
@@ -249,10 +203,12 @@ namespace JollyConsole
                     {
                         panel.Show();
                     }
-                    break;
+                }
+                else
+                {
+                    panel.Hide();
                 }
             }
-
         }
 
         private void Execute_click(object sender, EventArgs e)
@@ -296,6 +252,11 @@ namespace JollyConsole
         private string RemoveLastLine()
         {
             return textBox3.Text.Remove(textBox3.Text.LastIndexOf(Environment.NewLine));
+        }
+
+        private void buttonMacro1_Click(object sender, EventArgs e)
+        {
+            ChangePanelVisibility(sender, e);
         }
     }
 }
