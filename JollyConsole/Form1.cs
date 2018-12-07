@@ -84,7 +84,7 @@ namespace JollyConsole
                     textBox.Size = new System.Drawing.Size(100, 20);
                     textBox.TabIndex = command.Position;
                     textBox.Text = command.Text;
-                    textBox.KeyDown += new KeyEventHandler(enter_key_event);
+                    textBox.KeyPress += new KeyPressEventHandler(enter_key_event);
                     panel.Controls.Add(textBox);
 
                     textBoxLocation += textBox.Height + 10;
@@ -104,24 +104,43 @@ namespace JollyConsole
             }
         }
 
-        void enter_key_event(object sender, KeyEventArgs e)
+        void enter_key_event(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                // execute_click
-            }
-            //enter key is down
             TextBox textBox = ((TextBox)sender);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+            if (e.KeyChar == Convert.ToChar(Keys.Return))
+            {
+                foreach (Panel panel in panels)
+                {
+                    if (panel.Name.Replace("panel", "") == textBoxNameParts[0])
+                    {
+                        foreach (Control control in panel.Controls)
+                        {
+                            if (control.Name.Replace("execute", "") == textBoxNameParts[0])
+                            {
+                                ((Button)control).PerformClick();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                return;
+            }
+            if (!char.IsLetterOrDigit(e.KeyChar))
+            {
+                return;
+            }
+
             foreach (Macro macro in macros)
             {
-                string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
                 if (macro.Id.ToString() == textBoxNameParts[0])
                 {
                     foreach (Command command in macro.Commands)
                     {
                         if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
                         {
-                            command.Text = textBox.Text + e.KeyData.ToString().ToLower();
+                            command.Text = textBox.Text + e.KeyChar;
                             break;
                         }
                     }
