@@ -37,19 +37,31 @@ namespace JollyConsole
             cmdProcess.StartInfo.RedirectStandardOutput = true;
 
             cmdProcess.OutputDataReceived += new DataReceivedEventHandler(SortOutputHandler);
+            cmdProcess.ErrorDataReceived += new DataReceivedEventHandler(NetErrorDataHandler);
             cmdProcess.StartInfo.RedirectStandardInput = true;
+            cmdProcess.StartInfo.RedirectStandardError = true;
             cmdProcess.Start();
 
             cmdStreamWriter = cmdProcess.StandardInput;
             cmdProcess.BeginOutputReadLine();
+            cmdProcess.BeginErrorReadLine();
         }
 
         private static void SortOutputHandler(object sendingProcess,
             DataReceivedEventArgs outLine)
         {
-            if (!String.IsNullOrEmpty(outLine.Data))
+            if (!string.IsNullOrEmpty(outLine.Data))
             {
                 cmdOutput.Append(Environment.NewLine + outLine.Data);
+            }
+        }
+
+        private static void NetErrorDataHandler(object sendingProcess,
+            DataReceivedEventArgs errLine)
+        {
+            if (!string.IsNullOrEmpty(errLine.Data))
+            {
+                cmdOutput.Append(Environment.NewLine + errLine.Data);
             }
         }
 
@@ -73,7 +85,7 @@ namespace JollyConsole
         {
             string action1 = textBox1.Text;
             string action2 = textBox2.Text;
-            string result = action1 + " && " + action2 + " && git add . && git commit -m \"Test commit\"";
+            string result = action1 + " && " + action2;
 
             cmdStreamWriter.WriteLine(result);
             Thread.Sleep(500);

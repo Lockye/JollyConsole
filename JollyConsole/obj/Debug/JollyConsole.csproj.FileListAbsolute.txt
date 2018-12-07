@@ -8,3 +8,13 @@ D:\Projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.csproj.GenerateReso
 D:\Projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.csproj.CoreCompileInputs.cache
 D:\Projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.exe
 D:\Projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.pdb
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\bin\Debug\JollyConsole.exe.config
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\bin\Debug\JollyConsole.exe
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\bin\Debug\JollyConsole.pdb
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.csprojAssemblyReference.cache
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.Form1.resources
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.Properties.Resources.resources
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.csproj.GenerateResource.cache
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.csproj.CoreCompileInputs.cache
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.exe
+C:\Users\n.misic\Documents\git projects\JollyConsole\JollyConsole\obj\Debug\JollyConsole.pdb
