@@ -151,7 +151,6 @@ namespace JollyConsole
                     }
                 }
 
-
                 foreach (Panel panel in panels)
                 {
                     if (panel.Name.Replace("panel", "") == textBoxNameParts[0])
@@ -265,9 +264,21 @@ namespace JollyConsole
             {
                 if (macro.Id.ToString() == button.Name.Replace("execute", ""))
                 {
+                    bool allEmpty = true;
                     foreach (Command command in macro.Commands)
                     {
-                        result += command.Text + " && ";
+                        allEmpty &= command.Text.Length == 0;
+                    }
+                    if (allEmpty)
+                    {
+                        return;
+                    }
+                    foreach (Command command in macro.Commands)
+                    {
+                        if (command.Text.Length > 0)
+                        {
+                            result += command.Text + " && ";
+                        }
                     }
                     result = result.Substring(0, result.Length - 4);
                 }
