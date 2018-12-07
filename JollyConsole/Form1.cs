@@ -37,7 +37,7 @@ namespace JollyConsole
             cmdProcess.StartInfo.RedirectStandardOutput = true;
 
             cmdProcess.OutputDataReceived += new DataReceivedEventHandler(SortOutputHandler);
-            cmdProcess.ErrorDataReceived += new DataReceivedEventHandler(NetErrorDataHandler);
+            cmdProcess.ErrorDataReceived += new DataReceivedEventHandler(ErrorDataHandler);
             cmdProcess.StartInfo.RedirectStandardInput = true;
             cmdProcess.StartInfo.RedirectStandardError = true;
             cmdProcess.Start();
@@ -56,7 +56,7 @@ namespace JollyConsole
             }
         }
 
-        private static void NetErrorDataHandler(object sendingProcess,
+        private static void ErrorDataHandler(object sendingProcess,
             DataReceivedEventArgs errLine)
         {
             if (!string.IsNullOrEmpty(errLine.Data))
