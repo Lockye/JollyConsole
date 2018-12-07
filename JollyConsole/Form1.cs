@@ -213,7 +213,6 @@ namespace JollyConsole
 
         private void Execute_click(object sender, EventArgs e)
         {
-
             Button button = ((Button)sender);
             string result = "";
             foreach (Macro macro in macros)
@@ -237,8 +236,8 @@ namespace JollyConsole
                         }
                     }
                     result = result.Substring(0, result.Length - 4);
+                    break;
                 }
-                break;
             }
             cmdOutput.Clear();
             cmdStreamWriter.WriteLine(result);
