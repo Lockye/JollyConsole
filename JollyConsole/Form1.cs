@@ -96,11 +96,21 @@ namespace JollyConsole
             TextBox textBox = ((TextBox)sender);
             string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
             bool isEnter = e.KeyChar == Convert.ToChar(Keys.Return);
+            bool isBackspace = e.KeyChar == Convert.ToChar(Keys.Back);
             if (isEnter)
             {
                 e.Handled = true;
                 SendToCmd(CurrentConsoleCommand);
                 CurrentConsoleCommand = "";
+            } else if (isBackspace)
+            {
+                if (CurrentConsoleCommand.Length > 0)
+                {
+                    CurrentConsoleCommand = CurrentConsoleCommand.Remove(CurrentConsoleCommand.Length - 1);
+                } else
+                {
+                    e.Handled = true;
+                }
             } else
             {
                 CurrentConsoleCommand += e.KeyChar;
