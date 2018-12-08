@@ -76,7 +76,9 @@ namespace JollyConsole
                 button0.Text = "Macro" + i;
                 button0.UseVisualStyleBackColor = true;
                 button0.Click += new System.EventHandler(ButtonMacro1_Click);
+                button0.MouseDown += new MouseEventHandler(RightClick);
                 this.mainPanel.Controls.Add(button0);
+                buttons.Add(button0);
                 // 
                 // panel0
                 // 

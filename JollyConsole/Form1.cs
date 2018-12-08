@@ -29,6 +29,7 @@ namespace JollyConsole
 
         List<Macro> macros = new List<Macro>();
         List<Panel> panels = new List<Panel>();
+        List<Button> buttons = new List<Button>();
 
         public Form1()
         {
@@ -49,7 +50,7 @@ namespace JollyConsole
                 Macro initialMacro = new Macro
                 {
                     Id = i,
-                    Name = "GIT",
+                    Name = "Macro" + i,
                     Position = i * 2
                 };
 
@@ -73,7 +74,8 @@ namespace JollyConsole
         private void CommandTextBoxFocusLost(object sender, EventArgs e)
         {
             TextBox textBox = ((TextBox)sender);
-            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "")
+                .Split(new string[] { "Index" }, StringSplitOptions.None);
             foreach (Macro macro in macros)
             {
                 if (macro.Id.ToString() == textBoxNameParts[0])
@@ -86,6 +88,7 @@ namespace JollyConsole
                             break;
                         }
                     }
+
                     break;
                 }
             }
@@ -109,10 +112,12 @@ namespace JollyConsole
                     e.Handled = true;
                     return;
                 }
+
                 if (CurrentConsoleCommand.Length > 0)
                 {
-                    
-                    CurrentConsoleCommand = CurrentConsoleCommand.Remove(CurrentConsoleCommand.Length - caretPositionFromEnd - 1, 1);
+
+                    CurrentConsoleCommand =
+                        CurrentConsoleCommand.Remove(CurrentConsoleCommand.Length - caretPositionFromEnd - 1, 1);
                 }
                 else
                 {
@@ -121,7 +126,9 @@ namespace JollyConsole
             }
             else
             {
-                CurrentConsoleCommand = CurrentConsoleCommand.Insert(CurrentConsoleCommand.Length - caretPositionFromEnd, e.KeyChar.ToString());
+                CurrentConsoleCommand =
+                    CurrentConsoleCommand.Insert(CurrentConsoleCommand.Length - caretPositionFromEnd,
+                        e.KeyChar.ToString());
             }
         }
 
@@ -134,7 +141,9 @@ namespace JollyConsole
                     var macroIndex = GetLastConfiguredMacroIndex(e.KeyCode);
                     TempMethod(CurrentConsoleCommand, macroIndex);
                 }
-                catch (KeyNotFoundException) { }
+                catch (KeyNotFoundException)
+                {
+                }
             }
         }
 
@@ -164,6 +173,7 @@ namespace JollyConsole
                 {
                     command.Text = "";
                 }
+
                 foreach (Control control in panels[macroIndex].Controls)
                 {
                     if (control.Name.StartsWith("textBox" + macroIndex))
@@ -185,13 +195,16 @@ namespace JollyConsole
                     }
                 }
             }
-            catch (KeyNotFoundException ) { }
+            catch (KeyNotFoundException)
+            {
+            }
         }
 
         private void Enter_key_event(object sender, KeyPressEventArgs e)
         {
             TextBox textBox = ((TextBox)sender);
-            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "")
+                .Split(new string[] { "Index" }, StringSplitOptions.None);
             if (e.KeyChar == Convert.ToChar(Keys.Return))
             {
                 foreach (Macro macro in macros)
@@ -206,6 +219,7 @@ namespace JollyConsole
                                 break;
                             }
                         }
+
                         break;
                     }
                 }
@@ -222,6 +236,7 @@ namespace JollyConsole
                                 break;
                             }
                         }
+
                         break;
                     }
                 }
@@ -329,10 +344,12 @@ namespace JollyConsole
                     {
                         allEmpty &= command.Text.Length == 0;
                     }
+
                     if (allEmpty)
                     {
                         return;
                     }
+
                     foreach (Command command in macro.Commands)
                     {
                         if (command.Text.Length > 0)
@@ -340,6 +357,7 @@ namespace JollyConsole
                             result += command.Text + " && ";
                         }
                     }
+
                     result = result.Substring(0, result.Length - 4);
                     break;
                 }
@@ -364,6 +382,7 @@ namespace JollyConsole
                     finished = true;
                 }
             }
+
             var outputString = RemoveLastLine(textBox3.Text);
             outputString += cmdOutput.ToString();
             outputString = RemoveLastLine(outputString);
@@ -400,6 +419,11 @@ namespace JollyConsole
                 foreach (Macro macro in macrosFromJson)
                 {
                     macros.Add(macro);
+                }
+
+                for (int i = 0; i < macros.Count; i++)
+                {
+                    buttons[i].Text = macros[i].Name;
                 }
 
                 foreach (Macro macro in macros)
@@ -439,5 +463,33 @@ namespace JollyConsole
                 }
             }
         }
+
+        private void RightClick(object sender, MouseEventArgs e)
+        {
+            switch (e.Button)
+            {
+                case MouseButtons.Right:
+                    {
+                        MacroNameDialog dlg = new MacroNameDialog();
+                        if (dlg.ShowDialog() == DialogResult.OK)
+                        {
+                            string newMacroName = dlg.textBox1.Text;
+                            ((Button) sender).Text = newMacroName;
+                            string macroId = ((Button) sender).Name.Replace("button", "");
+                            foreach (Macro macro in macros)
+                            {
+                                if (macro.Id.ToString() == macroId)
+                                {
+                                    macro.Name = newMacroName;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                    }
+                    break;
+            }
+        }
     }
+
 }
