@@ -35,7 +35,6 @@ namespace JollyConsole
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +62,7 @@ namespace JollyConsole
             this.label1.TabIndex = 0;
             this.label1.Text = "MACROS";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-
+            
             for (int i = 0; i < NUMBER_OF_MACROS; i++)
             {
                 // 
@@ -134,7 +133,7 @@ namespace JollyConsole
             this.panel2.Controls.Add(this.textBox3);
             this.panel2.Location = new System.Drawing.Point(154, 38);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(634, 316);
+            this.panel2.Size = new System.Drawing.Size(634, 400);
             this.panel2.TabIndex = 1;
             // 
             // textBox3
@@ -145,16 +144,9 @@ namespace JollyConsole
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
             this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(628, 336);
+            this.textBox3.Size = new System.Drawing.Size(628, 394);
             this.textBox3.TabIndex = 0;
             this.textBox3.KeyPress += CheckConsolePressedKey;
-            // 
-            // panel3
-            // 
-            this.panel3.Location = new System.Drawing.Point(154, 360);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(634, 79);
-            this.panel3.TabIndex = 2;
             // 
             // menuStrip1
             // 
@@ -178,14 +170,14 @@ namespace JollyConsole
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.importToolStripMenuItem.Text = "Import...";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.exportToolStripMenuItem.Text = "Export...";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
@@ -194,7 +186,6 @@ namespace JollyConsole
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.menuStrip1);
@@ -216,7 +207,6 @@ namespace JollyConsole
         private System.Windows.Forms.FlowLayoutPanel mainPanel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox textBox3;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
