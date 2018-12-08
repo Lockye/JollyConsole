@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace JollyConsole
 {
@@ -278,6 +279,61 @@ namespace JollyConsole
         private void buttonMacro1_Click(object sender, EventArgs e)
         {
             ChangePanelVisibility(sender, e);
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "JSON |*.json";
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                string json = sr.ReadToEnd();
+                sr.Close();
+
+                macros.Clear();
+                Macro[] macrosFromJson = JsonConvert.DeserializeObject<Macro[]>(json);
+                foreach (Macro macro in macrosFromJson)
+                {
+                    macros.Add(macro);
+                }
+
+                foreach (Macro macro in macros)
+                {
+                    // add logic for Id, Name...
+                    foreach (Command command in macro.Commands)
+                    {
+                        foreach (Control control in panels[macro.Id].Controls)
+                        {
+                            if ("textBox" + macro.Id + "Index" + macro.Commands.IndexOf(command) == control.Name)
+                            {
+                                ((TextBox) control).Text = command.Text;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.InitialDirectory = @"C:\";  
+            saveFileDialog1.Title = "Save template";
+            saveFileDialog1.DefaultExt = "json";
+            saveFileDialog1.Filter = "JSON |*.json";
+            saveFileDialog1.FilterIndex = 0;
+            saveFileDialog1.RestoreDirectory = true;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                using (Stream s = File.Open(saveFileDialog1.FileName, FileMode.Create))
+                {
+                    using (StreamWriter sw = new StreamWriter(s))
+                    {
+                        sw.Write(JsonConvert.SerializeObject(macros, Formatting.Indented));
+                    }
+                }
+            }
         }
     }
 }
