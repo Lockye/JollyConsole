@@ -84,7 +84,7 @@ namespace JollyConsole
                 panel0.SuspendLayout();
                 panel0.Location = new System.Drawing.Point(3, 110);
                 panel0.Name = "panel" + i;
-                panel0.Size = new System.Drawing.Size(133, 135);
+                panel0.Size = new System.Drawing.Size(130, 135);
                 panel0.TabIndex = i * 2 + 1;
                 if (i > 0)
                 {
@@ -100,7 +100,7 @@ namespace JollyConsole
                     var textBox1 = new TextBox();
                     textBox1.Location = new System.Drawing.Point(3, 3);
                     textBox1.Name = "textBox" + i + "Index" + j;
-                    textBox1.Size = new System.Drawing.Size(122, 20);
+                    textBox1.Size = new System.Drawing.Size(119, 20);
                     textBox1.TabIndex = j;
                     textBox1.KeyPress += Enter_key_event;
                     textBox1.LostFocus += CommandTextBoxFocusLost;
@@ -114,7 +114,7 @@ namespace JollyConsole
                 var execute0 = new Button();
                 execute0.Location = new System.Drawing.Point(3, 107);
                 execute0.Name = "execute" + i;
-                execute0.Size = new System.Drawing.Size(122, 23);
+                execute0.Size = new System.Drawing.Size(119, 23);
                 execute0.TabIndex = NUMBER_OF_COMMANDS_PER_MACRO;
                 execute0.Text = "Execute" + i;
                 execute0.UseVisualStyleBackColor = true;
@@ -147,6 +147,7 @@ namespace JollyConsole
             this.textBox3.Size = new System.Drawing.Size(628, 394);
             this.textBox3.TabIndex = 0;
             this.textBox3.KeyPress += CheckConsolePressedKey;
+            this.textBox3.KeyDown += CheckConsoleDownKey;
             // 
             // menuStrip1
             // 

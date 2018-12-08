@@ -44,13 +44,13 @@ namespace JollyConsole
 
         private void InitMacros()
         {
-            for(int i = 0; i < NUMBER_OF_MACROS; i++)
+            for (int i = 0; i < NUMBER_OF_MACROS; i++)
             {
                 Macro initialMacro = new Macro
                 {
                     Id = i,
                     Name = "GIT",
-                    Position = i*2
+                    Position = i * 2
                 };
 
                 var listCommands = new List<Command>();
@@ -102,18 +102,68 @@ namespace JollyConsole
                 e.Handled = true;
                 SendToCmd(CurrentConsoleCommand);
                 CurrentConsoleCommand = "";
-            } else if (isBackspace)
+            }
+            else if (isBackspace)
             {
                 if (CurrentConsoleCommand.Length > 0)
                 {
                     CurrentConsoleCommand = CurrentConsoleCommand.Remove(CurrentConsoleCommand.Length - 1);
-                } else
+                }
+                else
                 {
                     e.Handled = true;
                 }
-            } else
+            }
+            else
             {
                 CurrentConsoleCommand += e.KeyChar;
+            }
+        }
+
+        private void CheckConsoleDownKey(object sender, KeyEventArgs e)
+        {
+            if (e.Modifiers == Keys.Control)
+            {
+                string[] commands = CurrentConsoleCommand.Split(new string[] { " && " }, StringSplitOptions.None);
+                try
+                {
+                    Console.WriteLine(CurrentConsoleCommand);
+                    Dictionary<Keys, int> dict = new Dictionary<Keys, int>();
+                    dict[Keys.D0] = 0;
+                    dict[Keys.NumPad0] = 0;
+                    dict[Keys.D1] = 1;
+                    dict[Keys.NumPad1] = 1;
+                    dict[Keys.D2] = 2;
+                    dict[Keys.NumPad2] = 2;
+                    dict[Keys.D3] = 3;
+                    dict[Keys.NumPad3] = 3;
+
+                    foreach (Command command in macros[dict[e.KeyCode]].Commands)
+                    {
+                        command.Text = "";
+                    }
+                    foreach (Control control in panels[dict[e.KeyCode]].Controls)
+                    {
+                        if (control.Name.StartsWith("textBox" + dict[e.KeyCode]))
+                        {
+                            control.Text = "";
+                        }
+                    }
+
+                    for (int i = 0; i < commands.Length; i++)
+                    {
+                        macros[dict[e.KeyCode]].Commands[i].Text = commands[i];
+                        foreach (Control control in panels[dict[e.KeyCode]].Controls)
+                        {
+                            if (control.Name == "textBox" + macros[dict[e.KeyCode]].Id + "Index" + i)
+                            {
+                                control.Text = commands[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (KeyNotFoundException ex) { }
             }
         }
 
@@ -275,6 +325,7 @@ namespace JollyConsole
             }
 
             SendToCmd(result);
+            CurrentConsoleCommand = "";
         }
 
         private void SendToCmd(string result)
@@ -339,7 +390,7 @@ namespace JollyConsole
                         {
                             if ("textBox" + macro.Id + "Index" + macro.Commands.IndexOf(command) == control.Name)
                             {
-                                ((TextBox) control).Text = command.Text;
+                                ((TextBox)control).Text = command.Text;
                             }
                         }
                     }
@@ -350,7 +401,7 @@ namespace JollyConsole
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.InitialDirectory = @"C:\";  
+            saveFileDialog1.InitialDirectory = @"C:\";
             saveFileDialog1.Title = "Save template";
             saveFileDialog1.DefaultExt = "json";
             saveFileDialog1.Filter = "JSON |*.json";
