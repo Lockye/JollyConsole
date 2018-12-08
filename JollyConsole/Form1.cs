@@ -93,8 +93,6 @@ namespace JollyConsole
 
         private void CheckConsolePressedKey(object sender, KeyPressEventArgs e)
         {
-            TextBox textBox = ((TextBox)sender);
-            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
             bool isEnter = e.KeyChar == Convert.ToChar(Keys.Return);
             bool isBackspace = e.KeyChar == Convert.ToChar(Keys.Back);
             if (isEnter)
@@ -124,47 +122,63 @@ namespace JollyConsole
         {
             if (e.Modifiers == Keys.Control)
             {
-                string[] commands = CurrentConsoleCommand.Split(new string[] { " && " }, StringSplitOptions.None);
                 try
                 {
-                    Console.WriteLine(CurrentConsoleCommand);
-                    Dictionary<Keys, int> dict = new Dictionary<Keys, int>();
-                    dict[Keys.D0] = 0;
-                    dict[Keys.NumPad0] = 0;
-                    dict[Keys.D1] = 1;
-                    dict[Keys.NumPad1] = 1;
-                    dict[Keys.D2] = 2;
-                    dict[Keys.NumPad2] = 2;
-                    dict[Keys.D3] = 3;
-                    dict[Keys.NumPad3] = 3;
+                    var macroIndex = GetLastConfiguredMacroIndex(e.KeyCode);
+                    TempMethod(CurrentConsoleCommand, macroIndex);
+                }
+                catch (KeyNotFoundException) { }
+            }
+        }
 
-                    foreach (Command command in macros[dict[e.KeyCode]].Commands)
-                    {
-                        command.Text = "";
-                    }
-                    foreach (Control control in panels[dict[e.KeyCode]].Controls)
-                    {
-                        if (control.Name.StartsWith("textBox" + dict[e.KeyCode]))
-                        {
-                            control.Text = "";
-                        }
-                    }
+        private int GetLastConfiguredMacroIndex(Keys keyCode)
+        {
+            Dictionary<Keys, int> dict = new Dictionary<Keys, int>
+            {
+                [Keys.D0] = 0,
+                [Keys.NumPad0] = 0,
+                [Keys.D1] = 1,
+                [Keys.NumPad1] = 1,
+                [Keys.D2] = 2,
+                [Keys.NumPad2] = 2,
+                [Keys.D3] = 3,
+                [Keys.NumPad3] = 3
+            };
 
-                    for (int i = 0; i < commands.Length; i++)
+            return dict[keyCode];
+        }
+
+        private void TempMethod(string currentConsoleCommand, int macroIndex)
+        {
+            string[] commands = currentConsoleCommand.Split(new[] { " && " }, StringSplitOptions.None);
+            try
+            {
+                foreach (Command command in macros[macroIndex].Commands)
+                {
+                    command.Text = "";
+                }
+                foreach (Control control in panels[macroIndex].Controls)
+                {
+                    if (control.Name.StartsWith("textBox" + macroIndex))
                     {
-                        macros[dict[e.KeyCode]].Commands[i].Text = commands[i];
-                        foreach (Control control in panels[dict[e.KeyCode]].Controls)
+                        control.Text = "";
+                    }
+                }
+
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    macros[macroIndex].Commands[i].Text = commands[i];
+                    foreach (Control control in panels[macroIndex].Controls)
+                    {
+                        if (control.Name == "textBox" + macros[macroIndex].Id + "Index" + i)
                         {
-                            if (control.Name == "textBox" + macros[dict[e.KeyCode]].Id + "Index" + i)
-                            {
-                                control.Text = commands[i];
-                                break;
-                            }
+                            control.Text = commands[i];
+                            break;
                         }
                     }
                 }
-                catch (KeyNotFoundException ex) { }
             }
+            catch (KeyNotFoundException ) { }
         }
 
         private void Enter_key_event(object sender, KeyPressEventArgs e)
@@ -359,7 +373,7 @@ namespace JollyConsole
             return str.Remove(str.LastIndexOf(Environment.NewLine));
         }
 
-        private void buttonMacro1_Click(object sender, EventArgs e)
+        private void ButtonMacro1_Click(object sender, EventArgs e)
         {
             ChangePanelVisibility(sender, e);
         }

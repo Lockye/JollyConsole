@@ -75,7 +75,7 @@ namespace JollyConsole
                 button0.TabIndex = i * 2;
                 button0.Text = "Macro" + i;
                 button0.UseVisualStyleBackColor = true;
-                button0.Click += new System.EventHandler(buttonMacro1_Click);
+                button0.Click += new System.EventHandler(ButtonMacro1_Click);
                 this.mainPanel.Controls.Add(button0);
                 // 
                 // panel0
