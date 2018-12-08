@@ -114,7 +114,10 @@ namespace JollyConsole
             }
             else
             {
-                CurrentConsoleCommand += e.KeyChar;
+                int caretPositionFromEnd = textBox3.TextLength - textBox3.SelectionStart;
+                Console.WriteLine(textBox3.TextLength + " " + textBox3.SelectionStart + " " + caretPositionFromEnd);
+                CurrentConsoleCommand = CurrentConsoleCommand.Insert(CurrentConsoleCommand.Length - caretPositionFromEnd, e.KeyChar.ToString());
+                //CurrentConsoleCommand += e.KeyChar;
             }
         }
 
