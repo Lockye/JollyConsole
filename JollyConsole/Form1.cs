@@ -11,6 +11,7 @@ namespace JollyConsole
     public partial class Form1 : Form
     {
         private static StringBuilder cmdOutput = null;
+        private static string CurrentConsoleCommand = "";
 
         const string Separator = "---Command Completed---";
         // Has to be something that won't occur in normal output.  
@@ -86,6 +87,22 @@ namespace JollyConsole
                     }
                     break;
                 }
+            }
+        }
+
+        private void CheckConsolePressedKey(object sender, KeyPressEventArgs e)
+        {
+            TextBox textBox = ((TextBox)sender);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new string[] { "Index" }, StringSplitOptions.None);
+            bool isEnter = e.KeyChar == Convert.ToChar(Keys.Return);
+            if (isEnter)
+            {
+                e.Handled = true;
+                SendToCmd(CurrentConsoleCommand);
+                CurrentConsoleCommand = "";
+            } else
+            {
+                CurrentConsoleCommand += e.KeyChar;
             }
         }
 
@@ -246,6 +263,11 @@ namespace JollyConsole
                 }
             }
 
+            SendToCmd(result);
+        }
+
+        private void SendToCmd(string result)
+        {
             finished = false;
             cmdOutput.Clear();
             cmdStreamWriter.WriteLine(result);

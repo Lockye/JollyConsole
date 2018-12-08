@@ -142,6 +142,7 @@ namespace JollyConsole
             this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox3.Size = new System.Drawing.Size(628, 336);
             this.textBox3.TabIndex = 0;
+            this.textBox3.KeyPress += CheckConsolePressedKey;
             // 
             // panel3
             // 
