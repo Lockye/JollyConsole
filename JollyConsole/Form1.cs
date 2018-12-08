@@ -1,35 +1,35 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
 namespace JollyConsole
 {
     public partial class Form1 : Form
     {
-        private static StringBuilder cmdOutput = null;
-        private static string CurrentConsoleCommand = "";
-
-        const string Separator = "---Command Completed---";
-        // Has to be something that won't occur in normal output.  
-
-        volatile bool finished = false;
 
         private static int NUMBER_OF_MACROS = 4;
         private static int NUMBER_OF_COMMANDS_PER_MACRO = 4;
+        private static StringBuilder cmdOutput;
+        private static string CurrentConsoleCommand = "";
+
+        private const string Separator = "---Command Completed---";
+        // Has to be something that won't occur in normal output.  
+
+        volatile bool finished;
 
         Process cmdProcess;
         StreamWriter cmdStreamWriter;
 
         private int macroId = 0;
 
-        List<Macro> macros = new List<Macro>();
-        List<Panel> panels = new List<Panel>();
-        List<Button> buttons = new List<Button>();
+        private readonly List<Macro> macros = new List<Macro>();
+        private readonly List<Panel> panels = new List<Panel>();
+        private readonly List<Button> buttons = new List<Button>();
 
         public Form1()
         {
@@ -73,24 +73,26 @@ namespace JollyConsole
 
         private void CommandTextBoxFocusLost(object sender, EventArgs e)
         {
-            TextBox textBox = ((TextBox)sender);
-            string[] textBoxNameParts = textBox.Name.Replace("textBox", "")
-                .Split(new string[] { "Index" }, StringSplitOptions.None);
-            foreach (Macro macro in macros)
-            {
-                if (macro.Id.ToString() == textBoxNameParts[0])
-                {
-                    foreach (Command command in macro.Commands)
-                    {
-                        if (macro.Commands.IndexOf(command).ToString() == textBoxNameParts[1])
-                        {
-                            command.Text = textBox.Text;
-                            break;
-                        }
-                    }
+            var textBox = ((TextBox)sender);
+            if (textBox == null)
+                return;
 
+            var textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new[] { "Index" }, StringSplitOptions.None);
+            foreach (var macro in macros)
+            {
+                if (macro.Id.ToString() != textBoxNameParts[0])
+                    continue;
+
+                foreach (var command in macro.Commands)
+                {
+                    if (macro.Commands.IndexOf(command).ToString() != textBoxNameParts[1])
+                        continue;
+
+                    command.Text = textBox.Text;
                     break;
                 }
+
+                break;
             }
         }
 
@@ -134,16 +136,16 @@ namespace JollyConsole
 
         private void CheckConsoleDownKey(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers == Keys.Control)
+            if (e.Modifiers != Keys.Control)
+                return;
+
+            try
             {
-                try
-                {
-                    var macroIndex = GetLastConfiguredMacroIndex(e.KeyCode);
-                    TempMethod(CurrentConsoleCommand, macroIndex);
-                }
-                catch (KeyNotFoundException)
-                {
-                }
+                var macroIndex = GetLastConfiguredMacroIndex(e.KeyCode);
+                AddCommandToMacroChain(CurrentConsoleCommand, macroIndex);
+            }
+            catch (KeyNotFoundException)
+            {
             }
         }
 
@@ -164,7 +166,7 @@ namespace JollyConsole
             return dict[keyCode];
         }
 
-        private void TempMethod(string currentConsoleCommand, int macroIndex)
+        private void AddCommandToMacroChain(string currentConsoleCommand, int macroIndex)
         {
             string[] commands = currentConsoleCommand.Split(new[] { " && " }, StringSplitOptions.None);
             try
@@ -200,11 +202,21 @@ namespace JollyConsole
             }
         }
 
+        private void Space_key_event(object sender, KeyPressEventArgs e)
+        {
+            //if (e.KeyChar == Convert.ToChar(Keys.Space))
+            //{
+            //    var buttonSender = (Button) sender;
+            //    var tempPanel = panels.Find(panel => panel.Name.Replace("panel", "") == buttonSender.Name.Replace("button", ""));
+            //    var control = tempPanel.Controls.Find("execute")
+            //}
+        }
+
         private void Enter_key_event(object sender, KeyPressEventArgs e)
         {
             TextBox textBox = ((TextBox)sender);
-            string[] textBoxNameParts = textBox.Name.Replace("textBox", "")
-                .Split(new string[] { "Index" }, StringSplitOptions.None);
+            string[] textBoxNameParts = textBox.Name.Replace("textBox", "").Split(new[] { "Index" }, StringSplitOptions.None);
+
             if (e.KeyChar == Convert.ToChar(Keys.Return))
             {
                 foreach (Macro macro in macros)
@@ -246,12 +258,17 @@ namespace JollyConsole
         private void InitializeConsole()
         {
             cmdOutput = new StringBuilder("");
-            cmdProcess = new Process();
+            cmdProcess = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true
+                }
+            };
 
-            cmdProcess.StartInfo.FileName = "cmd.exe";
-            cmdProcess.StartInfo.UseShellExecute = false;
-            cmdProcess.StartInfo.CreateNoWindow = true;
-            cmdProcess.StartInfo.RedirectStandardOutput = true;
 
             cmdProcess.OutputDataReceived += SortOutputHandler;
             cmdProcess.ErrorDataReceived += ErrorDataHandler;
@@ -305,29 +322,6 @@ namespace JollyConsole
             if (!string.IsNullOrEmpty(errLine.Data))
             {
                 cmdOutput.Append(Environment.NewLine + errLine.Data);
-            }
-        }
-
-        private void ChangePanelVisibility(object sender, EventArgs e)
-        {
-            Button button = ((Button)sender);
-            foreach (Panel panel in panels)
-            {
-                if (panel.Name.Replace("panel", "") == button.Name.Replace("button", ""))
-                {
-                    if (panel.Visible)
-                    {
-                        panel.Hide();
-                    }
-                    else
-                    {
-                        panel.Show();
-                    }
-                }
-                else
-                {
-                    panel.Hide();
-                }
             }
         }
 
@@ -394,23 +388,46 @@ namespace JollyConsole
             textBox3.AppendText(outputString);
         }
 
-        private string RemoveLastLine(string str)
+        private static string RemoveLastLine(string str)
         {
-            return str.Remove(str.LastIndexOf(Environment.NewLine));
+            return str.Remove(str.LastIndexOf(Environment.NewLine, StringComparison.Ordinal));
         }
 
-        private void ButtonMacro1_Click(object sender, EventArgs e)
+        private void ButtonMacro_Click(object sender, EventArgs e)
         {
             ChangePanelVisibility(sender, e);
         }
 
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ChangePanelVisibility(object sender, EventArgs e)
+        {
+            var button = ((Button)sender);
+            foreach (var panel in panels)
+            {
+                if (panel.Name.Replace("panel", "") == button.Name.Replace("button", ""))
+                {
+                    if (panel.Visible)
+                    {
+                        panel.Hide();
+                    }
+                    else
+                    {
+                        panel.Show();
+                    }
+                }
+                else
+                {
+                    panel.Hide();
+                }
+            }
+        }
+
+        private void ImportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "JSON |*.json";
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                StreamReader sr = new StreamReader(openFileDialog1.FileName);
                 string json = sr.ReadToEnd();
                 sr.Close();
 
@@ -421,21 +438,19 @@ namespace JollyConsole
                     macros.Add(macro);
                 }
 
-                for (int i = 0; i < macros.Count; i++)
+                for (var i = 0; i < macros.Count; i++)
                 {
-                    buttons[i].Text = macros[i].Name;
-                }
+                    var macro = macros[i];
 
-                foreach (Macro macro in macros)
-                {
-                    // add logic for Id, Name...
-                    foreach (Command command in macro.Commands)
+                    buttons[i].Text = macro.Name;
+
+                    foreach (var command in macro.Commands)
                     {
                         foreach (Control control in panels[macro.Id].Controls)
                         {
                             if ("textBox" + macro.Id + "Index" + macro.Commands.IndexOf(command) == control.Name)
                             {
-                                ((TextBox)control).Text = command.Text;
+                                control.Text = command.Text;
                             }
                         }
                     }
@@ -443,7 +458,7 @@ namespace JollyConsole
             }
         }
 
-        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.InitialDirectory = @"C:\";
@@ -452,44 +467,43 @@ namespace JollyConsole
             saveFileDialog1.Filter = "JSON |*.json";
             saveFileDialog1.FilterIndex = 0;
             saveFileDialog1.RestoreDirectory = true;
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+
+            if (saveFileDialog1.ShowDialog() != DialogResult.OK)
             {
-                using (Stream s = File.Open(saveFileDialog1.FileName, FileMode.Create))
+                return;
+            }
+
+            using (Stream s = File.Open(saveFileDialog1.FileName, FileMode.Create))
+            {
+                using (StreamWriter sw = new StreamWriter(s))
                 {
-                    using (StreamWriter sw = new StreamWriter(s))
-                    {
-                        sw.Write(JsonConvert.SerializeObject(macros, Formatting.Indented));
-                    }
+                    sw.Write(JsonConvert.SerializeObject(macros, Formatting.Indented));
                 }
             }
         }
 
         private void RightClick(object sender, MouseEventArgs e)
         {
-            switch (e.Button)
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            var dlg = new MacroNameDialog();
+            if (dlg.ShowDialog() != DialogResult.OK)
+                return;
+
+            var buttonClicked = (Button) sender;
+            var newMacroName = dlg.textBox1.Text;
+            buttonClicked.Text = newMacroName;
+
+            var macroClickedId = buttonClicked.Name.Replace("button", "");
+            foreach (var macro in macros)
             {
-                case MouseButtons.Right:
-                    {
-                        MacroNameDialog dlg = new MacroNameDialog();
-                        if (dlg.ShowDialog() == DialogResult.OK)
-                        {
-                            string newMacroName = dlg.textBox1.Text;
-                            ((Button) sender).Text = newMacroName;
-                            string macroId = ((Button) sender).Name.Replace("button", "");
-                            foreach (Macro macro in macros)
-                            {
-                                if (macro.Id.ToString() == macroId)
-                                {
-                                    macro.Name = newMacroName;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                    }
-                    break;
+                if (macro.Id.ToString() != macroClickedId)
+                    continue;
+
+                macro.Name = newMacroName;
+                break;
             }
         }
     }
-
 }

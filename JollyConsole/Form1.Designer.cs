@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace JollyConsole
 {
@@ -62,7 +61,7 @@ namespace JollyConsole
             this.label1.TabIndex = 0;
             this.label1.Text = "MACROS";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            
+
             for (int i = 0; i < NUMBER_OF_MACROS; i++)
             {
                 // 
@@ -75,7 +74,8 @@ namespace JollyConsole
                 button0.TabIndex = i * 2;
                 button0.Text = "Macro" + i;
                 button0.UseVisualStyleBackColor = true;
-                button0.Click += new System.EventHandler(ButtonMacro1_Click);
+                button0.Click += new System.EventHandler(ButtonMacro_Click);
+                button0.KeyPress += Space_key_event;
                 button0.MouseDown += new MouseEventHandler(RightClick);
                 this.mainPanel.Controls.Add(button0);
                 buttons.Add(button0);
@@ -88,10 +88,7 @@ namespace JollyConsole
                 panel0.Name = "panel" + i;
                 panel0.Size = new System.Drawing.Size(130, 135);
                 panel0.TabIndex = i * 2 + 1;
-                if (i > 0)
-                {
-                    panel0.Hide();
-                }
+                panel0.Hide();
                 panels.Add(panel0);
 
                 for (int j = 0; j < NUMBER_OF_COMMANDS_PER_MACRO; j++)
@@ -175,26 +172,31 @@ namespace JollyConsole
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.importToolStripMenuItem.Text = "Import...";
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.ImportToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.exportToolStripMenuItem.Text = "Export...";
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.ExportToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.StartPosition = FormStartPosition.CenterParent;
+
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "JollyConsole";
             this.mainPanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
