@@ -19,6 +19,7 @@ namespace JollyConsole
 
         private const string Separator = "---Command Completed---";
         // Has to be something that won't occur in normal output.  
+        // this is the nice comment
         volatile bool finished;
 
         Process cmdProcess;
